@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet">
+    <title>cadastro clientes</title>
+
+    <style>
+        body{
+            background-color: rgb(0, 217, 255);
+
+        }
+        h1{
+            color:rgb(37, 77, 255);
+            text-align: center;
+            font-family: cursive;
+        }
+
+    </style>
+    <script>
+    
+
+        function limpa_formulário_cep() {
+                //Limpa valores do formulário de cep.
+                document.getElementById('RUA').value="";
+                    document.getElementById('BAIRRO').value="";
+                    document.getElementById('CIDADE').value="";
+                    document.getElementById('ESTADO(UF)').value="";
+                    document.getElementById('CEP').value="";
+        }
+
+        function meu_callback(conteudo) {
+            if (!("erro" in conteudo)) {
+                //Atualiza os campos com os valores.
+                document.getElementById('RUA').value= conteudo.logradouro;
+                    document.getElementById('BAIRRO').value= conteudo.bairro;
+                    document.getElementById('CIDADE').value= conteudo.localidade;
+                    document.getElementById('ESTADO(UF)').value= conteudo.uf;
+            } //end if.
+            else {
+                //CEP não Encontrado.
+                limpa_formulário_cep();
+                alert("CEP não encontrado.");
+            }
+        }
+            
+        function pesquisacep(valor) {
+
+            //Nova variável "cep" somente com dígitos.
+            var cep = valor.replace(/\D/g, '');
+
+            //Verifica se campo cep possui valor informado.
+            if (cep != "") {
+
+                //Expressão regular para validar o CEP.
+                var validacep = /^[0-9]{8}$/;
+
+                //Valida o formato do CEP.
+                if(validacep.test(cep)) {
+
+                    //Preenche os campos com "..." enquanto consulta webservice.
+                    document.getElementById('RUA').value="";
+                    document.getElementById('BAIRRO').value="";
+                    document.getElementById('CIDADE').value="";
+                    document.getElementById('ESTADO(UF)').value="";
+            
+
+
+
+                    //Cria um elemento javascript.
+                    var script = document.createElement('script');
+
+                    //Sincroniza com o callback.
+                    script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+
+                    //Insere script no documento e carrega o conteúdo.
+                    document.body.appendChild(script);
+
+                } //end if.
+                else {
+                    //cep é inválido.
+                    limpa_formulário_cep();
+                    alert("Formato de CEP inválido.");
+                }
+            } //end if.
+            else {
+                //cep sem valor, limpa formulário.
+                limpa_formulário_cep();
+            }
+        };
+
+
+
+    </script>
+</head>
+<body>
+    
+    
+
+
+    <header>
+
+
+
+    </header>
+    <main>
+        <h1> login clientes</h1>
+    
+
+        <form>
+            
+            <label for= "nome"> nome:</label>
+            <input type="text" id="nome" placeholder= "cleiton da silvassauro" required class="input-texto">
+
+            <label for= "cpf"> cpf:</label>
+            <input type="text" placeholder= "000.000.000-00" required class="input-texto">
+
+
+            <label for= "email"> Email:</label>
+            <input type="email" id="email" placeholder= "exemplo fulano@gmail" required class="input-texto">
+
+            <label for= "celular"> Celular:</label>
+            <input type="tel" id="celular" placeholder= "(00) 0000-0000" required class="input-texto">
+
+            <!--
+            <label for= "CEP"> CEP:</label>
+            <input type="text" id="CEP" onblur="pesquisacep(this.value)" placeholder= "000-000-00" required class="input-texto">
+
+            <label for= "RUA"> RUA:</label>
+            <input type="text" id="RUA" placeholder= "alvares pedro" required class="input-texto">
+
+            <label for= "NÚMERO"> NÚMERO:</label>
+            <input type="text" id="celular" placeholder= "000" required class="input-texto">
+
+
+            <label for= "BAIRRO"> BAIRRO:</label>
+            <input type="text" id="BAIRRO" placeholder= "ex: cara-cara" required class="input-texto">
+
+            <label for= "CIDADE"> CIDADE:</label>
+            <input type="text" id="CIDADE" placeholder= " ex: curitiba" required class="input-texto">
+
+            <label for= "ESTADO(UF)"> ESTADO(UF):</label>
+            <input type="text" id="ESTADO(UF)" placeholder= "(00)" required class="input-texto"> 
+            -->
+
+            <label for= "senha"> senha:</label>
+            <input type="text" id="senha" placeholder= " ex: 9456" required class="input-texto">
+
+
+            <input type="submit" value="enviar cadastro" class="btn_enviar">
+
+        </form>
+    </main>
+
+    <footer>
+
+    </footer>
+
+</body>
+
+</html>

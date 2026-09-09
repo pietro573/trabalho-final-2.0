@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet">
+    <title>cadastro clientes</title>
+
+    <style>
+body{
+    background-color: rgb(0, 217, 255);
+
+}
+h1{
+    color:rgb(37, 77, 255);
+    text-align: center;
+    font-family: cursive;
+}
+
+    </style>
+    
+</head>
+<body>
+    
+    
+
+
+<header>
+
+
+
+</header>
+
+
+
+
+<main>
+    <h1> cadastro clientes</h1>
+</main>
+
+
+
+
+<form id = "form_cadastro">
+
+
+<label for= "nome"> nome:</label>
+<input type="text" id="nome" placeholder= "cleiton da silvassauro" required class="input-texto">
+
+<label for= "cpf"> cpf:</label>
+<input type="text" placeholder= "000.000.000-00" required class="input-texto">
+
+<label for= "celular"> Celular:</label>
+<input type="tel" id="celular" placeholder= "(00) 0000-0000" required class="input-texto">
+
+<label for= "email"> Email:</label>
+<input type="email" id="email" placeholder= "exemplo fulano@gmail" required class="input-texto">
+
+<label for= "senha"> senha:</label>
+<input type="text" id="senha" placeholder= " ex: 9456" required class="input-texto">
+
+
+
+
+<!--<label for= "dt_nasc"> data de nascimento:</label>
+<input type="date" id="dt_nasc" required class="input-texto">
+
+
+<label for= "CEP"> CEP:</label>
+<input type="text" id="CEP" onblur="pesquisacep(this.value)" placeholder= "000-000-00" required class="input-texto">
+
+<label for= "RUA"> RUA:</label>
+<input type="text" id="RUA" placeholder= "alvares pedro" required class="input-texto">
+
+<label for= "NÚMERO"> NÚMERO:</label>
+<input type="text" id="celular" placeholder= "000" required class="input-texto">
+
+
+<label for= "BAIRRO"> BAIRRO:</label>
+<input type="text" id="BAIRRO" placeholder= "ex: cara-cara" required class="input-texto">
+
+<label for= "CIDADE"> CIDADE:</label>
+<input type="text" id="CIDADE" placeholder= " ex: curitiba" required class="input-texto">
+
+<label for= "ESTADO(UF)"> ESTADO(UF):</label>
+<input type="text" id="ESTADO(UF)" placeholder= "(00)" required class="input-texto">
+
+-->
+
+<input type="submit" id ="btn_enviar" value="enviar cadastro" class="btn_enviar">
+
+</form>
+
+<footer>
+
+</footer>
+<script>
+    
+    function pegarDados (){
+        dados = {
+        nome: document.getElementbyId("nome").value,
+        cpf: document.getElementbyId("cpf").value,
+        celular: document.getElementbyId("celular").value,
+        email: document.getElementbyId("email").value,
+        senha: document.getElementbyId("senha").value
+       }
+       return dados
+    }
+
+    const form_cadastro = document.getElementById("form_cadastro")
+    const btn_enviar = document.getElementById("btn_enviar")
+    form_cadastro.addEventListener("submit", async(event) => {
+        event.preventDefault()
+        btn_enviar.disabled = true
+        btn_enviar.value = "enviar cadastro..."
+
+        const dados = pegarDados()
+        try{
+            const resposta = await fetch("http://localhost:3000/cadastrar", {
+                method: "POST",
+                headers: {"content-Type": "application/json"}, 
+                body: JSON.stryngify(dados)
+            })
+            if (!resposta.ok) {
+            throw new Error("Erro na api")
+            }
+              alert("o cadastro foi realizado")
+            form_cadastro.reset()
+        } catch(error){
+            alert(error)
+        }finally {
+            btn_enviar.value = "enviar"
+            btn_enviar.disabled = false
+        }
+        
+    })
+    </script>
+</body>
+
+</html>
