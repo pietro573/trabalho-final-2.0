@@ -2,6 +2,9 @@
 // npm i express
 // npm i mysql2
 // npm i bcrypt
+// npm i jsonwebtoken
+// npm i dotenv
+// npm i cors
 // node index.js -> executa a API
 // ​http://localhost:3000/cliente
 const express = require("express")
@@ -12,6 +15,14 @@ app.use(express.json())
 const db = require("./db")
 
 const bcrypt = require("bcrypt")
+
+const jwt = require("jsonwebtoken")
+
+const dotenv = require("dotenv")
+dotenv.config()
+
+const cors = require("cors")
+app.use(cors())
 
 app.post("/cliente", async (req, res) => {
     try {
@@ -48,22 +59,24 @@ app.get("/cliente", async (req, res) => {
 })
 
 
-app.get("/cliente/:id", async (req, res) => {
+app.get("/cliente/perfil", autenticar, async (req) => {
     try {
-        const { id } = req.params
+        const id = req.usuario.id
 
-        const resultado = await db.pool.query(
-            `SELECT id, nome, cpf, email, celular FROM cliente WHERE id = ?`,
-            [id]
-        )
+        const result = await db.pool.query(
+            `SELECT * FROM cliente WHERE id = ?`, [id])
+        const perfil = result[0][0]
+        delete perfil.senha
+            
 
-        if (resultado[0].length === 0) {
+        if (result[0].length === 0) {
             return res.status(404).json({ mensagem: "Cliente não encontrado" })
         }
 
-        res.status(200).json(resultado[0][0])
-    } catch (error) {
-        res.status(500).json({ erro: error.message })
+        res.status(200).json(perfil)
+    } catch (err) {
+        res.status(500).json({ erro: "erro interno" });
+        throw err;
     }
 })
 
@@ -141,10 +154,18 @@ app.post("/login", async (req,res) => {
         if(!dados_bd) {
             return res.status(401).json({msg: "email não encontrado!"})
         }
-        if(user.senha != dados_bd) {
-            return res.status(401).json({msg: "credenciais erradas!"})
+        
+        const  senha_valida = await bcrypt.compare(user.senha, dados_bd.senha)
+        if (!senha_valida) {
+            return res.status(401).json({msg: "credenciais inválidas!"})
         }
-        return res.status(200).json({msg: "login realizado com sucesso"})
+        const payload= {
+            id: dados_bd.id,
+            email: dados_bd.email
+        }
+        const token = jwt. sign(payload, process.env.JWT_SECRET, {expiresI: '1m'})
+        return res.status(200). json({nome: dados_bd.nome, token: token})
+        
 
     } catch (error) {
         res.status(500).json({ erro: error.message })
@@ -154,3 +175,15 @@ app.listen(port, () => {
     console.log("API rodando na porta " + port)
 })
 
+function autenticar(req, res, next){
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    if (token == null){
+        return res.status(401).json({erro: "Token não enviado, usar Authorization Bearer <token>"})
+    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, usuario) => {
+        if (err) return res.status(403).json({erro: "Token inválido"})
+        req.usuario = usuario
+        next()
+    })   
+}
