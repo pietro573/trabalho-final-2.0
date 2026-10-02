@@ -89,9 +89,7 @@
                 limpa_formulário_cep();
             }
         };
-
-
-
+        
     </script>
 </head>
 <body>
@@ -156,7 +154,51 @@
     <footer>
 
     </footer>
+<script>
+    
+    function pegarDados (){
+        dados = {
+        nome: document.getElementbyId("nome").value,
+        cpf: document.getElementbyId("cpf").value,
+        celular: document.getElementbyId("celular").value,
+        email: document.getElementbyId("email").value,
+        senha: document.getElementbyId("senha").value
+       }
+       return dados
+    }
 
+    const form_login = document.getElementById("form_login")
+    const btn_entrar = document.getElementById("btn_entrar")
+    form_login.addEventListener("submit", async(event) => {
+        event.preventDefault()
+        btn_entrar.disabled = true
+        btn_entrar.value = "logar..."
+
+        const dados = pegarDados()
+        try{
+            const resposta = await fetch("http://localhost:3000/login", {
+                method: "POST",
+                headers: {"content-Type": "application/json"}, 
+                body: JSON.stryngify(dados)
+            })
+            if (!resposta.ok) {
+                if (resposta.status == 401) {
+                     throw new Error(json_resposta.msg)
+                } else {
+                     throw new Error("Erro inesperado na api")
+                }
+            }
+              alert("o login foi realizado")
+            form_login.reset()
+        } catch(error){
+            alert(error)
+        }finally {
+            btn_entrar.value = "entrar"
+            btn_entrar.disabled = false
+        }
+        
+    })
+    </script>
 </body>
 
 </html>
